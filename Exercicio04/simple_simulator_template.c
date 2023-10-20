@@ -1,4 +1,4 @@
-// gcc simple_simulator_Template.c -O3 -march=native -o simulador -Wall -lm
+// gcc simple_simulator_template.c -O3 -march=native -o simulador -Wall -lm
 // -lm is option to execute math.h library file.
 /*
 Perguntas:
@@ -370,7 +370,11 @@ loop:
 
 				case LOADI:
 					// reg[rx] = MEMORY[reg[ry]];
-					
+					selM4 = ry;
+					selM1 = sM4;
+					RW = 0;
+					selM2 = sDATA_OUT;
+					LoadReg[rx] = 1;
 					// -----------------------------
 					state=STATE_FETCH;
 					break;
@@ -383,7 +387,9 @@ loop:
 					break;
 
 				case MOV:
-					
+					selM4 = ry;
+					selM2 = sM4;
+					LoadReg[rx] = 1;
 					// -----------------------------
 					state=STATE_FETCH;
 					break;
@@ -398,7 +404,14 @@ loop:
 				case LXOR:
 				case LNOT:
 					// reg[rx] = reg[ry] + reg[rz]; // Soma ou outra operacao
-					
+					selM3 = ry;
+					selM4 = rz;
+					OP = pega_pedaco(IR, 10, 15);
+					carry = pega_pedaco(IR, 0, 0);
+					selM2 = sULA;
+					LoadReg[rx] = 1;
+					selM6 = sULA;
+					LoadFR = 1;
 					// -----------------------------
 					state=STATE_FETCH;
 					break;
