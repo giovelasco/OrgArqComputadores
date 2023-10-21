@@ -1,0 +1,1 @@
+O exercício 1 consiste na criação de um Encoder que retorna _true_ quando a entrada é o número 1035 em binário.
