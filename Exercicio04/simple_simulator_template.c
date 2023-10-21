@@ -1,4 +1,5 @@
-// gcc simple_simulator_template.c -O3 -march=native -o simulador -Wall -lm
+// gcc simple_simulator_Template.c -O3 -march=native -o simulador -Wall -lm
+// ./simulador [nome].mif
 // -lm is option to execute math.h library file.
 /*
 Perguntas:
@@ -352,10 +353,13 @@ loop:
 					state=STATE_FETCH;
 					break;
 
-				case LOAD:
+				case LOAD: // recebe RX e o ENDERECO (apagar)
 					// MAR = MEMORY[PC];
 					// PC++;
-
+					selM1 = sPC;
+					RW = 0;
+					LoadMAR = 1;
+					IncPC = 1;
 					// -----------------------------
 					state=STATE_EXECUTE;
 					break;
@@ -363,7 +367,10 @@ loop:
 				case STORE:
 					//MAR = MEMORY[PC];
 					//PC++;
-					
+					selM1 = sPC;
+					RW = 0;
+					LoadMAR = 1;
+					IncPC = 1;
 					// -----------------------------
 					state=STATE_EXECUTE;
 					break;
@@ -381,7 +388,11 @@ loop:
 
 				case STOREI:
 					//mem[reg[rx]] = reg[ry];
-					
+					selM4 = rx;
+					selM3 = ry;
+					selM1 = sM4;
+					selM5 = sM3;
+					RW = 1;
 					// -----------------------------
 					state=STATE_FETCH;
 					break;
@@ -406,7 +417,7 @@ loop:
 					// reg[rx] = reg[ry] + reg[rz]; // Soma ou outra operacao
 					selM3 = ry;
 					selM4 = rz;
-					OP = pega_pedaco(IR, 10, 15);
+					OP = pega_pedaco(IR, 15, 10);
 					carry = pega_pedaco(IR, 0, 0);
 					selM2 = sULA;
 					LoadReg[rx] = 1;
@@ -418,7 +429,14 @@ loop:
 
 				case INC:
 					//reg[rx]++;                                  // Inc Rx ou DEC
-					
+					selM3 = rx;
+					selM4 = 8;
+					if(pega_pedaco(IR, 6, 6) == 0)
+						OP = 32;
+					else if(pega_pedaco(IR, 6, 6) == 1)
+						OP = 33;
+					selM2 = sULA;
+					LoadReg[rx] = 1;
 					// -----------------------------
 					state=STATE_FETCH;
 					break;
@@ -544,14 +562,20 @@ loop:
 			switch(opcode){
 				case LOAD:
 					//reg[rx] = MEMORY[MAR];
-
+					selM1 = sMAR;
+					RW = 0;
+					selM2 = sDATA_OUT;
+					LoadReg[rx] = 1;
 					// -----------------------------
 					state=STATE_FETCH;
 					break;
 
 				case STORE:
 					//MEMORY[MAR] = reg[rx];
-
+					selM3 = rx;
+					selM5 = sM3;
+					selM1 = sMAR;
+					RW = 1;
 					// -----------------------------
 					state=STATE_FETCH;
 					break; 
