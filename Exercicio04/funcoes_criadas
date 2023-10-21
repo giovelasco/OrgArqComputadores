@@ -26,7 +26,7 @@ STORE:
 	    selM1 = sMAR;
 	    RW = 1;
 
-LOADI:  // reg[rx] = MEMORY[reg[ry]];
+LOADI:      // reg[rx] = MEMORY[reg[ry]];
 	selM4 = ry;
 	selM1 = sM4;
 	RW = 0;
@@ -48,7 +48,7 @@ MOV:    //reg[rx] = reg[ry]
 	LoadReg[rx] = 1;
 
 
-ADD / SUB / MULT / DIV / LMOD / LAND / LOR / LXOR / LNOT: // reg[rx] = reg[ry] + reg[rz]; // Soma ou outra operacao
+ADD / SUB / MULT / DIV / LMOD / LAND / LOR / LXOR / LNOT: // reg[rx] = reg[ry] + reg[rz]
     selM3 = ry;
     selM4 = rz;
     OP = pega_pedaco(IR, 15, 10);
