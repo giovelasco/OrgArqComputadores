@@ -1,13 +1,12 @@
 // gcc simple_simulator_Template.c -O3 -march=native -o simulador -Wall -lm
-// ./simulador [nome].mif
-// -lm is option to execute math.h library file.
+// ./simulador TesteCPU.mif ou outro arquivo.mif
 /*
 Perguntas:
 1) O que tenho que fazer?
 2) Onde começa?
-3) Onde Termina?
+3) Onde termina?
 4) Qual é o caminho?
-Do todos os comandos...
+Dar todos os comandos...
 5) Acabou??
 6) E o PC ????????
 */
@@ -356,10 +355,10 @@ loop:
 				case LOAD: // recebe RX e o ENDERECO (apagar)
 					// MAR = MEMORY[PC];
 					// PC++;
-					selM1 = sPC;
-					RW = 0;
-					LoadMAR = 1;
-					IncPC = 1;
+					selM1 = sPC; // o M1 recebe o PC
+					RW = 0; // Acessa o arquivo de dados em modo leitura
+					LoadMAR = 1; // Dá load no MAR para receber o data_out lido
+					IncPC = 1; // Incrementa o PC para ler a proxima instrução
 					// -----------------------------
 					state=STATE_EXECUTE;
 					break;
