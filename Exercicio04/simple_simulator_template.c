@@ -356,9 +356,9 @@ loop:
 					// MAR = MEMORY[PC];
 					// PC++;
 					selM1 = sPC; // o M1 recebe o PC
-					RW = 0; // Acessa o arquivo de dados em modo leitura
-					LoadMAR = 1; // Dá load no MAR para receber o data_out lido
-					IncPC = 1; // Incrementa o PC para ler a proxima instrução
+					RW = 0; // Acessa o arquivo de dados em modo leitura para ler o endereço de memória apontado pelo PC
+					LoadMAR = 1; // Dá load no MAR para receber o endereço lido
+					IncPC = 1; // Incrementa o PC para ler a proxima instrução no ciclo de busca
 					// -----------------------------
 					state=STATE_EXECUTE;
 					break;
@@ -366,9 +366,9 @@ loop:
 				case STORE:
 					//MAR = MEMORY[PC];
 					//PC++;
-					selM1 = sPC; // M1 recebe o Pc
-					RW = 0; // Modo de leitura
-					LoadMAR = 1; // Dá load no MAR
+					selM1 = sPC; // M1 recebe o PC
+					RW = 0; // Modo de leitura para ler o endereco de memória apontado pelo PC
+					LoadMAR = 1; // Dá load no MAR para receber o endereco de memória
 					IncPC = 1; // Incrementa o PC para ler a proxima instrução
 					// -----------------------------
 					state=STATE_EXECUTE;
@@ -564,20 +564,20 @@ loop:
 			switch(opcode){
 				case LOAD:
 					//reg[rx] = MEMORY[MAR];
-					selM1 = sMAR;
-					RW = 0;
-					selM2 = sDATA_OUT;
-					LoadReg[rx] = 1;
+					selM1 = sMAR; //M1 recebe o endereço de memória no MAR
+					RW = 0; // Arquivo no modo de leitura para ler o que tem no endereço de memória do MAR
+					selM2 = sDATA_OUT; // M2 recebe o dado no endereço de memória
+					LoadReg[rx] = 1; // Dá load no registrador rx, que recebe o que tem no M2(dado lido)
 					// -----------------------------
 					state=STATE_FETCH;
 					break;
 
 				case STORE:
 					//MEMORY[MAR] = reg[rx];
-					selM3 = rx;
-					selM5 = sM3;
-					selM1 = sMAR;
-					RW = 1;
+					selM3 = rx; // M3 recebe o que tem no rx
+					selM5 = sM3; // M5 recebe o que tem no M3 (rx)
+					selM1 = sMAR; // M1 recebe o endereço de memória que tem no MAR
+					RW = 1; // Arquivo em modo de escrita, escrevendo rx no local de memória do MAR
 					// -----------------------------
 					state=STATE_FETCH;
 					break; 
