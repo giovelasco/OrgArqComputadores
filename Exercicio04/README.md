@@ -11,7 +11,7 @@
 - [x] MOV
 - [x] ADD/SUB/MULT/DIV/LMOD/LAND/LOR/LXOR/LNOT 
 - [x] INC
-- [ ] CMP
+- [x] CMP
 - [x] SHIFT
 - [x] JMP
 - [ ] CALL
