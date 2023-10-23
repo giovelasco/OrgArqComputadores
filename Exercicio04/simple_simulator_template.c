@@ -366,40 +366,40 @@ loop:
 				case STORE:
 					//MAR = MEMORY[PC];
 					//PC++;
-					selM1 = sPC;
-					RW = 0;
-					LoadMAR = 1;
-					IncPC = 1;
+					selM1 = sPC; // M1 recebe o Pc
+					RW = 0; // Modo de leitura
+					LoadMAR = 1; // Dá load no MAR
+					IncPC = 1; // Incrementa o PC para ler a proxima instrução
 					// -----------------------------
 					state=STATE_EXECUTE;
 					break;
 
 				case LOADI:
 					// reg[rx] = MEMORY[reg[ry]];
-					selM4 = ry;
-					selM1 = sM4;
-					RW = 0;
-					selM2 = sDATA_OUT;
-					LoadReg[rx] = 1;
+					selM4 = ry; // O M4 recebe o registrador ry
+					selM1 = sM4; // O M1 recece o que tem no M4
+					RW = 0; // Arquivo de memória em modo de leitura
+					selM2 = sDATA_OUT; // ||M2 recebe o que foi lido
+					LoadReg[rx] = 1; // Dá load no rx para receber o data_out no M2
 					// -----------------------------
 					state=STATE_FETCH;
 					break;
 
 				case STOREI:
 					//mem[reg[rx]] = reg[ry];
-					selM4 = rx;
-					selM3 = ry;
-					selM1 = sM4;
-					selM5 = sM3;
-					RW = 1;
+					selM4 = rx; // O M4 recebe o registrador rx
+					selM3 = ry; // M3 recebe o registrador ry
+					selM1 = sM4; // M1 recebe o que tem M4 (registrador rx)
+					selM5 = sM3; // M5 recebe o que tem M3 (registrador ry)
+					RW = 1; // Arquivo de memória no modo escrita
 					// -----------------------------
 					state=STATE_FETCH;
 					break;
 
 				case MOV:
-					selM4 = ry;
-					selM2 = sM4;
-					LoadReg[rx] = 1;
+					selM4 = ry; //M4 recebe registrador ry
+					selM2 = sM4; // M2 recebe o que tem no registrador M4 (ry)
+					LoadReg[rx] = 1; // Dá load no registrador rx com o que tem no M2 (ry)
 					// -----------------------------
 					state=STATE_FETCH;
 					break;
@@ -414,35 +414,38 @@ loop:
 				case LXOR:
 				case LNOT:
 					// reg[rx] = reg[ry] + reg[rz]; // Soma ou outra operacao
-					selM3 = ry;
-					selM4 = rz;
-					OP = pega_pedaco(IR, 15, 10);
-					carry = pega_pedaco(IR, 0, 0);
-					selM2 = sULA;
-					LoadReg[rx] = 1;
-					selM6 = sULA;
-					LoadFR = 1;
+					selM3 = ry; // M3 recebe o registrador ry
+					selM4 = rz; // M4 recebe o registrador rz
+					OP = pega_pedaco(IR, 15, 10); // o OP da ULA vai receber o opcode que está no IR, escrito nos bits de 10 a 15
+					carry = pega_pedaco(IR, 0, 0); // carry da ULA vai receber o carry no IR, que está no bit 0
+					selM2 = sULA; // M2 recebe o resultado da ULA
+					LoadReg[rx] = 1; // Dá load no registrador rx, que recebe o que tem no M2(resultado da ULA)
+					selM6 = sULA; // M6 recebe o resultado na ULA
+					LoadFR = 1; // Flag register recebe o resultado da ULA para armazenar as flags
 					// -----------------------------
 					state=STATE_FETCH;
 					break;
 
 				case INC:
 					//reg[rx]++;                                  // Inc Rx ou DEC
-					selM3 = rx;
-					selM4 = 8;
-					if(pega_pedaco(IR, 6, 6) == 0)
+					selM3 = rx; // M3 recebe o que tem no registrador rx
+					selM4 = 8; //M4 recebe o bit 1, presente na opção 8 do M4
+					if(pega_pedaco(IR, 6, 6) == 0) // Se o opcode do IR tiver uma flag de incrementar, realiza a soma de rx + 1 na ULA
 						OP = 32;
-					else if(pega_pedaco(IR, 6, 6) == 1)
+					else if(pega_pedaco(IR, 6, 6) == 1) // Se o opcode do IR tiver uma flag de decrementar, realiza a subtração rx - 1 na ULA
 						OP = 33;
-					selM2 = sULA;
-					LoadReg[rx] = 1;
+					selM2 = sULA; // M2 recebe o resultado da ULA
+					LoadReg[rx] = 1; // Dá load no rx, que recebe o que tem no M2(resultado da ULA)
 					// -----------------------------
 					state=STATE_FETCH;
 					break;
 
 				case CMP:   // seta 3 flags: maior, menor ou igual
 					//if(rx == ry)
-					
+					selM3 = rx; // M3 recebe o que tem no rx
+					selM4 = ry; // M4 recebe o que tem no ry
+					OP = CMP; // OP da ULA recebe comparação
+					LoadFR = 1; // Flag register é atualizado com o resultado da operação
 					// -----------------------------
 					state=STATE_FETCH;
 					break;
