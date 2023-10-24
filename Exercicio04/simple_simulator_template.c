@@ -1,4 +1,4 @@
-// gcc simple_simulator_Template.c -O3 -march=native -o simulador -Wall -lm
+// gcc simple_simulator_template.c -O3 -march=native -o simulador -Wall -lm
 // ./simulador TesteCPU.mif ou outro arquivo.mif
 /*
 Perguntas:
@@ -287,8 +287,8 @@ loop:
 			LoadFR  = 0;
 			selM1   = sPC;
 			selM2   = sDATA_OUT;
-			selM3   = 0;  // Pode por direto o nr. do Regisrador
-			selM4   = 0;  // Pode por direto o nr. do Regisrador
+			selM3   = 0;  // Pode por direto o nr. do Registrador
+			selM4   = 0;  // Pode por direto o nr. do Registrador
 			selM5   = sM3;
 			selM6   = sULA;
 
@@ -352,7 +352,7 @@ loop:
 					state=STATE_FETCH;
 					break;
 
-				case LOAD: // recebe RX e o ENDERECO (apagar)
+				case LOAD: 
 					// MAR = MEMORY[PC];
 					// PC++;
 					selM1 = sPC; // o M1 recebe o PC
@@ -445,6 +445,8 @@ loop:
 					selM3 = rx; // M3 recebe o que tem no rx
 					selM4 = ry; // M4 recebe o que tem no ry
 					OP = CMP; // OP da ULA recebe comparação
+					carry = 0; // Seta o carry para 0
+					selM6 = sULA; // M6 recebe o resultado da ULA
 					LoadFR = 1; // Flag register é atualizado com o resultado da operação
 					// -----------------------------
 					state=STATE_FETCH;
@@ -475,7 +477,7 @@ loop:
 				case JMP:
 					COND = pega_pedaco(IR,9,6);
 
-					if((COND == 0)                       	                      // NO COND
+					if((COND == 0)                        	                      // NO COND
 							|| (FR[0]==1 && (COND==7))                            // GREATER
 							|| ((FR[2]==1 || FR[0]==1) && (COND==9))              // GREATER EQUAL
 							|| (FR[1]==1 && (COND==8))                            // LESSER
@@ -503,27 +505,62 @@ loop:
 					break;
 
 				case CALL:
-					
-					state=STATE_FETCH;
+					COND = pega_pedaco(IR,9,6);
+
+					if((COND == 0)                       	                      // NO COND
+							|| (FR[0]==1 && (COND==7))                            // GREATER
+							|| ((FR[2]==1 || FR[0]==1) && (COND==9))              // GREATER EQUAL
+							|| (FR[1]==1 && (COND==8))                            // LESSER
+							|| ((FR[2]==1 || FR[1]==1) && (COND==10))             // LESSER EQUAL
+							|| (FR[2]==1 && (COND==1))                            // EQUAL
+							|| (FR[2]==0 && (COND==2))                            // NOT EQUAL
+							|| (FR[3]==1 && (COND==3))                            // ZERO
+							|| (FR[3]==0 && (COND==4))                            // NOT ZERO
+							|| (FR[4]==1 && (COND==5))                            // CARRY
+							|| (FR[4]==0 && (COND==6))                            // NOT CARRY
+							|| (FR[5]==1 && (COND==11))                           // OVERFLOW
+							|| (FR[5]==0 && (COND==12))                           // NOT OVERFLOW
+							|| (FR[6]==1 && (COND==14))                           // NEGATIVO
+							|| (FR[9]==1 && (COND==13)))                          // DIVBYZERO
+					{ // PC = MEMORY[PC];
+						selM1 = sSP;
+						RW = 1;
+						selM5 = sPC;
+						DecSP = 1;
+						state =STATE_EXECUTE;	
+					}
+					else{
+						//PC++;
+						IncPC = 1;
+						state=STATE_FETCH;
+					}
 					// -----------------------------
 					break;
 
+					//OBS:
+					//Empilhar == decrementar o SP
+					//Desempilhar == incrementar o SP
+
+				case RTS:
+					// SP++;
+					IncSP = 1;
+					// -----------------------------
+					state=STATE_EXECUTE;
+					break;
+
 				case PUSH:
-					
+					selM1 = sSP;
+					RW = 1;
+					selM3 = rx;
+					selM5 = sM3;
+					DecSP = 1;
 					// -----------------------------
 					state=STATE_FETCH;
 					break;
 
 				case POP:
 					//SP++;
-					
-					// -----------------------------
-					state=STATE_EXECUTE;
-					break;
-
-				case RTS:
-					// SP++;
-					
+					IncSP = 1;
 					// -----------------------------
 					state=STATE_EXECUTE;
 					break;
@@ -583,33 +620,31 @@ loop:
 					break; 
 
 				case CALL:
-
-					// -----------------------------
-					state=STATE_FETCH;
-					break; 
-
-				case POP:
-					
+					selM1 = sPC;
+					RW = 0;
+					LoadPC = 1;
 					// -----------------------------
 					state=STATE_FETCH;
 					break; 
 
 				case RTS:
 					//PC = MEMORY[SP];
-					
+					selM1 = sSP;
+					RW = 0;
+					LoadPC = 1; //PC recebe o valor que estava guardado na memória
 					// -----------------------------
 					state=STATE_EXECUTE2;
 					break;
 
-				case PUSH:
-					
+				case POP:
+					selM1 = sSP;
+					RW = 0;
+					selM2 = sDATA_OUT;
+					LoadReg[rx] = 1;
 					// -----------------------------
 					state=STATE_FETCH;
-					break;
-
-
+					break; 
 			}
-
 			//state=STATE_EXECUTE2;
 			break;
 
@@ -617,7 +652,7 @@ loop:
 
 			//case RTS:
 			//PC++;
-			
+			IncPC = 1;
 			// -----------------------------
 			state=STATE_FETCH;
 			break;
