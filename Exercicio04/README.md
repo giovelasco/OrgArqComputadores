@@ -1,4 +1,4 @@
-#### A atividade consiste em acrescentar algumas instruções no ProcessadorICMC no arquivo simple_simulator_template.c.
+#### A atividade consiste em acrescentar algumas instruções no ProcessadorICMC no arquivo simple_simulator_template.c. Para executar um teste no processador, é preciso salvar os arquivos do repositório e executar os comandos inseridos no início do documento simple_simulator_template.c no terminal.
 
  No ciclo de Decodificação, temos as funções:
 - [x] INCHAR
