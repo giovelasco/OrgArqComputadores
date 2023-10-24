@@ -14,10 +14,10 @@
 - [x] CMP
 - [x] SHIFT
 - [x] JMP
-- [ ] CALL
-- [ ] PUSH
-- [ ] POP
-- [ ] RTS
+- [x] CALL
+- [x] PUSH
+- [x] POP
+- [x] RTS
 - [x] SETC
 - [x] HALT
 - [x] NOP
@@ -26,7 +26,6 @@
  No ciclo de Execução, temos as funções:
 - [x] LOAD
 - [x] STORE
-- [ ] CALL
-- [ ] POP
-- [ ] RTS
-- [ ] PUSH
+- [x] CALL
+- [x] POP
+- [x] RTS
